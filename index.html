@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tilou</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preload" as="image" href="background-optimized.jpg" fetchpriority="high">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -109,14 +111,38 @@
     <script>
         (function () {
             var root = document.documentElement;
+            var body = document.body;
             var button = document.getElementById("theme-toggle");
             var initialTheme = "light";
+            var isReady = false;
 
             function applyTheme(theme) {
                 root.setAttribute("data-theme", theme);
             }
 
+            function markReady() {
+                if (isReady) {
+                    return;
+                }
+                isReady = true;
+                requestAnimationFrame(function () {
+                    body.classList.add("is-ready");
+                });
+            }
+
             applyTheme(initialTheme);
+
+            var bg = new Image();
+            bg.decoding = "async";
+            bg.src = "background-optimized.jpg";
+
+            if (bg.complete) {
+                markReady();
+            } else {
+                bg.addEventListener("load", markReady);
+                bg.addEventListener("error", markReady);
+                setTimeout(markReady, 900);
+            }
 
             button.addEventListener("click", function () {
                 var isDark = root.getAttribute("data-theme") === "dark";

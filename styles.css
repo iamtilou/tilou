@@ -34,7 +34,7 @@ body {
     color: var(--text);
     background:
         linear-gradient(var(--overlay), var(--overlay)),
-        url("./design-space-paper-textured-background.jpg") center / cover fixed no-repeat;
+        url("./background-optimized.jpg") center / cover no-repeat;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.34s ease, color 0.34s ease, background 0.34s ease;
@@ -64,6 +64,14 @@ body {
     height: 100dvh;
     padding: 24px 0;
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.42s ease, transform 0.42s ease;
+}
+
+body.is-ready .page {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .profile-row {
@@ -348,5 +356,25 @@ body {
     .projects-list span,
     .company-logos span {
         font-size: 0.94rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page,
+    .avatar,
+    .social-links a,
+    .role,
+    .intro,
+    .section li,
+    .card,
+    .card h3,
+    .card p,
+    .projects-list span,
+    .company-logos span,
+    .theme-toggle,
+    .theme-toggle svg,
+    body {
+        transition: none !important;
+        transform: none !important;
     }
 }
