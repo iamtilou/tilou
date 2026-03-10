@@ -1,0 +1,352 @@
+:root {
+    color-scheme: light dark;
+    --text: #121212;
+    --muted: #3b3b3b;
+    --line: rgba(0, 0, 0, 0.18);
+    --panel: rgba(255, 255, 255, 0.56);
+    --overlay: rgba(255, 255, 255, 0.62);
+    --logo: #1e1e1e;
+}
+
+[data-theme="dark"] {
+    --text: #f1f1f1;
+    --muted: #d0d0d0;
+    --line: rgba(255, 255, 255, 0.28);
+    --panel: rgba(0, 0, 0, 0.45);
+    --overlay: rgba(0, 0, 0, 0.64);
+    --logo: #f1f1f1;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    font-family: "Geist", "Inter", sans-serif;
+    font-weight: 400;
+    color: var(--text);
+    background:
+        linear-gradient(var(--overlay), var(--overlay)),
+        url("./design-space-paper-textured-background.jpg") center / cover fixed no-repeat;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.34s ease, color 0.34s ease, background 0.34s ease;
+    overflow: hidden;
+}
+
+.avatar,
+.social-links a,
+.role,
+.intro,
+.section li,
+.card,
+.card h3,
+.card p,
+.projects-list span,
+.company-logos span {
+    transition:
+        color 0.32s ease,
+        background-color 0.32s ease,
+        border-color 0.32s ease,
+        opacity 0.32s ease;
+}
+
+.page {
+    width: min(800px, 93vw);
+    margin: 0 auto;
+    height: 100dvh;
+    padding: 24px 0;
+    overflow: hidden;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    color: var(--text);
+    background: var(--panel);
+}
+
+.identity h1 {
+    margin: 0;
+    font-size: 1.72rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.role {
+    margin: 4px 0 0;
+    font-size: 0.96rem;
+    font-weight: 400;
+    color: var(--muted);
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 0;
+}
+
+.social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.social-links svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.social-links a:hover {
+    color: var(--text);
+}
+
+.theme-toggle {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--muted);
+    font-family: inherit;
+    position: relative;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+        transform 0.18s ease,
+        color 0.22s ease,
+        border-color 0.22s ease,
+        background-color 0.22s ease;
+}
+
+.theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition:
+        opacity 0.22s ease,
+        transform 0.26s ease;
+}
+
+.theme-toggle .icon-moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle .icon-sun {
+    opacity: 0;
+    transform: rotate(-30deg) scale(0.75);
+}
+
+[data-theme="dark"] .theme-toggle .icon-moon {
+    opacity: 0;
+    transform: rotate(30deg) scale(0.75);
+}
+
+[data-theme="dark"] .theme-toggle .icon-sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle:hover {
+    color: var(--text);
+}
+
+.theme-toggle:active {
+    transform: scale(0.92);
+}
+
+.intro {
+    margin: 0;
+    max-width: 680px;
+    font-size: 0.98rem;
+    line-height: 1.4;
+    color: var(--muted);
+}
+
+.section {
+    margin-top: 18px;
+}
+
+.section h2 {
+    margin: 0 0 7px;
+    font-size: 1.34rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.section ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.section li {
+    margin-bottom: 3px;
+    font-size: 0.96rem;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.skills-grid,
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.card {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 0;
+    padding: 10px;
+}
+
+.card h3 {
+    margin: 0 0 5px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.card p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.35;
+}
+
+.projects-section,
+.companies-section {
+    margin-top: 20px;
+}
+
+.projects-section h2,
+.companies-section h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.34rem;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: none;
+}
+
+.projects-list,
+.company-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 16px;
+    margin-top: 10px;
+}
+
+.projects-list span,
+.company-logos span {
+    color: var(--logo);
+    font-size: 1.08rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    opacity: 0.85;
+}
+
+@media (max-width: 640px) {
+    .page {
+        width: 90vw;
+        padding: 16px 0;
+    }
+
+    .profile-row {
+        flex-direction: column;
+        margin-bottom: 12px;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .identity h1 {
+        font-size: 1.4rem;
+    }
+
+    .role,
+    .section li,
+    .intro {
+        font-size: 0.9rem;
+    }
+
+    .section h2,
+    .projects-section h2,
+    .companies-section h2 {
+        font-size: 1.12rem;
+    }
+
+    .skills-grid,
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .projects-list,
+    .company-logos {
+        justify-content: flex-start;
+    }
+
+    .projects-list span,
+    .company-logos span {
+        font-size: 0.94rem;
+    }
+}

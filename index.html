@@ -4,8 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tilou</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <p>tilou</p>
+    <main class="page">
+        <header class="profile-row">
+            <div class="profile">
+                <div class="avatar" aria-hidden="true">t</div>
+                <div class="identity">
+                    <h1>tilou</h1>
+                    <p class="role">lorem ipsum</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <nav class="social-links" aria-label="social links">
+                    <a href="https://www.youtube.com/@iamtilou" target="_blank" rel="noreferrer" aria-label="youtube">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M22 12c0 2.2-.2 3.4-.4 4.1a2.9 2.9 0 0 1-2 2c-.7.2-1.9.4-7.6.4s-6.9-.2-7.6-.4a2.9 2.9 0 0 1-2-2C2.2 15.4 2 14.2 2 12s.2-3.4.4-4.1a2.9 2.9 0 0 1 2-2C5.1 5.7 6.3 5.5 12 5.5s6.9.2 7.6.4a2.9 2.9 0 0 1 2 2c.2.7.4 1.9.4 4.1Z"></path>
+                            <path d="m10 9 5 3-5 3z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="email">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                            <path d="m3 7 9 7 9-7"></path>
+                        </svg>
+                    </a>
+                    <a href="https://x.com/iamtilou" target="_blank" rel="noreferrer" aria-label="x">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4 4 20 20"></path>
+                            <path d="M20 4 4 20"></path>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/iamtilou" target="_blank" rel="noreferrer" aria-label="github">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.2c3.3-.4 6.8-1.6 6.8-7A5.4 5.4 0 0 0 19.4 4 5 5 0 0 0 19.3 1s-1.6-.4-4.6 1.5a13.4 13.4 0 0 0-7.4 0C4.3.6 2.7 1 2.7 1A5 5 0 0 0 2.6 4a5.4 5.4 0 0 0-1.4 3.8c0 5.4 3.5 6.6 6.8 7A4.8 4.8 0 0 0 7 18v4"></path>
+                            <path d="M7 18c-4 2-4-2-6-2"></path>
+                        </svg>
+                    </a>
+                </nav>
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="toggle theme">
+                    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <path d="M12 2v2"></path>
+                        <path d="M12 20v2"></path>
+                        <path d="m4.93 4.93 1.41 1.41"></path>
+                        <path d="m17.66 17.66 1.41 1.41"></path>
+                        <path d="M2 12h2"></path>
+                        <path d="M20 12h2"></path>
+                        <path d="m4.93 19.07 1.41-1.41"></path>
+                        <path d="m17.66 6.34 1.41-1.41"></path>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <p class="intro">lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+        <section class="section">
+            <h2>what i do:</h2>
+            <ul>
+                <li>lorem ipsum</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>skills</h2>
+            <div class="skills-grid">
+                <article class="card">
+                    <h3>lorem ipsum</h3>
+                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </article>
+                <article class="card">
+                    <h3>lorem ipsum</h3>
+                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </article>
+                <article class="card">
+                    <h3>lorem ipsum</h3>
+                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="projects-section">
+            <h2>projects</h2>
+            <div class="projects-list">
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+                <span>lorem ipsum</span>
+            </div>
+        </section>
+    </main>
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var button = document.getElementById("theme-toggle");
+            var initialTheme = "light";
+
+            function applyTheme(theme) {
+                root.setAttribute("data-theme", theme);
+            }
+
+            applyTheme(initialTheme);
+
+            button.addEventListener("click", function () {
+                var isDark = root.getAttribute("data-theme") === "dark";
+                var nextTheme = isDark ? "light" : "dark";
+                applyTheme(nextTheme);
+            });
+        })();
+    </script>
 </body>
 </html>
