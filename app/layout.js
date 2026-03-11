@@ -1,11 +1,4 @@
-import { Geist } from "next/font/google";
 import "./globals.css";
-
-const geist = Geist({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist",
-});
 
 export const metadata = {
   metadataBase: new URL("https://tilou.xyz"),
@@ -54,7 +47,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={geist.variable}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
