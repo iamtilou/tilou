@@ -1,30 +1,30 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>tilou</title>
-    <meta name="description" content="Portfolio officiel de tilou. Retrouvez mes projets, mes skills et tous mes liens sociaux.">
+    <meta name="description" content="official portfolio of tilou. explore my projects, skills, and social links.">
     <meta name="author" content="tilou">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://tilou.xyz/">
-    <link rel="alternate" hreflang="fr" href="https://tilou.xyz/">
+    <link rel="alternate" hreflang="en" href="https://tilou.xyz/">
     <link rel="alternate" hreflang="x-default" href="https://tilou.xyz/">
-    <meta property="og:locale" content="fr_FR">
+    <meta property="og:locale" content="en_us">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="tilou | Portfolio">
-    <meta property="og:description" content="Portfolio officiel de tilou. Retrouvez mes projets, mes skills et tous mes liens sociaux.">
+    <meta property="og:title" content="tilou">
+    <meta property="og:description" content="official portfolio of tilou. explore my projects, skills, and social links.">
     <meta property="og:url" content="https://tilou.xyz/">
     <meta property="og:site_name" content="tilou">
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="tilou | Portfolio">
-    <meta name="twitter:description" content="Portfolio officiel de tilou. Retrouvez mes projets, mes skills et tous mes liens sociaux.">
+    <meta name="twitter:title" content="tilou">
+    <meta name="twitter:description" content="official portfolio of tilou. explore my projects, skills, and social links.">
     <meta name="twitter:creator" content="@iamtilou">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <meta name="theme-color" content="#050608">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="video" href="/batman-rain.mp4" type="video/mp4">
+    <link rel="preload" as="video" href="/batman-rain.mp4?v=20260311" type="video/mp4">
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script type="application/ld+json">
@@ -55,9 +55,10 @@
 </head>
 <body>
     <div class="bg-video-wrap" aria-hidden="true">
-        <video id="bg-video" class="bg-video" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture>
-            <source src="/batman-rain.mp4" type="video/mp4">
+        <video id="bg-video-a" class="bg-video is-visible" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture>
+            <source src="/batman-rain.mp4?v=20260311" type="video/mp4">
         </video>
+        <video id="bg-video-b" class="bg-video" autoplay muted playsinline webkit-playsinline preload="none" disablepictureinpicture data-src="/batman-rain.mp4?v=20260311"></video>
     </div>
     <main class="page">
         <header class="profile-row">
@@ -65,7 +66,7 @@
                 <div class="avatar" aria-hidden="true">t</div>
                 <div class="identity">
                     <h1>tilou</h1>
-                    <p class="role">lorem ipsum</p>
+                    <p class="role">aspiring agentic ai engineer</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -117,7 +118,7 @@
         <section class="section">
             <h2>what i do:</h2>
             <ul>
-                <li>lorem ipsum</li>
+                <li>i (will) design and ship autonomous intelligent systems for large-scale real-world use.</li>
             </ul>
         </section>
 
@@ -156,10 +157,30 @@
     <script>
         (function () {
             var body = document.body;
-            var video = document.getElementById("bg-video");
+            var videoA = document.getElementById("bg-video-a");
+            var videoB = document.getElementById("bg-video-b");
+            var videos = [videoA, videoB].filter(Boolean);
             var isReady = false;
             var isVideoResolved = false;
             var retryBound = false;
+            var activeIndex = 0;
+            var isSwitching = false;
+            var switchPaddingSec = 0.9;
+            var crossfadeMs = 280;
+            var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            var isMobileViewport = window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
+            var saveDataEnabled = navigator.connection && navigator.connection.saveData;
+            var lowMemoryDevice = navigator.deviceMemory && navigator.deviceMemory <= 4;
+            var supportsDualLoop = videos.length === 2 && !prefersReducedMotion && !isMobileViewport && !saveDataEnabled && !lowMemoryDevice;
+
+            if (supportsDualLoop && videoB && !videoB.querySelector("source")) {
+                var secondarySource = document.createElement("source");
+                secondarySource.src = videoB.getAttribute("data-src") || "/batman-rain.mp4?v=20260311";
+                secondarySource.type = "video/mp4";
+                videoB.appendChild(secondarySource);
+                videoB.preload = "auto";
+                videoB.load();
+            }
 
             function markReady() {
                 if (isReady) {
@@ -192,6 +213,20 @@
                 }
             }
 
+            function playVideo(video) {
+                var playPromise = video.play();
+                if (playPromise && typeof playPromise.then === "function") {
+                    return playPromise;
+                }
+                return Promise.resolve();
+            }
+
+            function setVisible(index) {
+                videos.forEach(function (video, i) {
+                    video.classList.toggle("is-visible", i === index);
+                });
+            }
+
             function bindRetry() {
                 if (retryBound || isVideoResolved) {
                     return;
@@ -208,30 +243,93 @@
                 window.addEventListener("keydown", resumeVideo, { once: true });
             }
 
-            function tryPlay() {
-                if (!video || isVideoResolved) {
+            function switchLoop() {
+                if (!supportsDualLoop || videos.length < 2 || isSwitching) {
                     return;
                 }
-                var playPromise = video.play();
-                if (playPromise && typeof playPromise.then === "function") {
-                    playPromise.then(markVideoPlaying).catch(function () {
-                        markVideoFailed(false);
-                        bindRetry();
-                    });
-                } else {
+
+                var current = videos[activeIndex];
+                var nextIndex = activeIndex === 0 ? 1 : 0;
+                var next = videos[nextIndex];
+
+                isSwitching = true;
+                next.currentTime = 0;
+
+                playVideo(next).then(function () {
+                    setVisible(nextIndex);
                     markVideoPlaying();
-                }
+
+                    window.setTimeout(function () {
+                        current.pause();
+                        current.currentTime = 0;
+                        activeIndex = nextIndex;
+                        isSwitching = false;
+                    }, crossfadeMs);
+                }).catch(function () {
+                    isSwitching = false;
+                    markVideoFailed(false);
+                    bindRetry();
+                });
             }
 
-            if (video) {
-                video.addEventListener("loadeddata", markReady, { once: true });
-                video.addEventListener("canplay", tryPlay, { once: true });
-                video.addEventListener("playing", markVideoPlaying, { once: true });
-                video.addEventListener("error", function () { markVideoFailed(true); }, { once: true });
+            function monitorLoop() {
+                if (!supportsDualLoop || !videos.length) {
+                    return;
+                }
+
+                var current = videos[activeIndex];
+                if (current && !isSwitching && current.duration && isFinite(current.duration)) {
+                    if (current.duration - current.currentTime <= switchPaddingSec) {
+                        switchLoop();
+                    }
+                }
+
+                requestAnimationFrame(monitorLoop);
+            }
+
+            function initVideo(video, shouldLoop) {
                 video.muted = true;
                 video.defaultMuted = true;
+                video.loop = shouldLoop;
                 video.setAttribute("playsinline", "");
                 video.setAttribute("webkit-playsinline", "");
+                video.addEventListener("error", function () {
+                    markVideoFailed(videos.length === 1);
+                });
+            }
+
+            function tryPlay() {
+                if (!videos.length) {
+                    markVideoFailed(true);
+                    return;
+                }
+
+                var current = videos[activeIndex];
+                playVideo(current).then(function () {
+                    markVideoPlaying();
+                }).catch(function () {
+                    markVideoFailed(false);
+                    bindRetry();
+                });
+            }
+
+            if (!supportsDualLoop && videoB) {
+                videoB.pause();
+                while (videoB.firstChild) {
+                    videoB.removeChild(videoB.firstChild);
+                }
+                videos = videoA ? [videoA] : [];
+            }
+
+            videos.forEach(function (video) {
+                initVideo(video, !supportsDualLoop);
+            });
+            setVisible(activeIndex);
+
+            if (videos.length) {
+                videos[0].addEventListener("loadeddata", markReady, { once: true });
+                videos[0].addEventListener("canplay", tryPlay, { once: true });
+                videos[0].addEventListener("playing", markVideoPlaying, { once: true });
 
                 document.addEventListener("visibilitychange", function () {
                     if (document.visibilityState === "visible") {
@@ -239,16 +337,20 @@
                     }
                 });
 
-                setTimeout(tryPlay, 220);
+                setTimeout(tryPlay, 180);
                 setTimeout(function () {
                     if (!isVideoResolved) {
                         markVideoFailed(false);
                     }
-                }, 3000);
+                }, 2600);
+                if (supportsDualLoop) {
+                    monitorLoop();
+                }
             } else {
                 markVideoFailed(true);
             }
-            setTimeout(markReady, 320);
+
+            setTimeout(markReady, 260);
         })();
     </script>
 </body>

@@ -1,5 +1,21 @@
 {
+  "redirects": [
+    {
+      "source": "/Batman-Rain.mp4",
+      "destination": "/batman-rain.mp4",
+      "permanent": true
+    }
+  ],
   "headers": [
+    {
+      "source": "/",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/batman-rain.mp4",
       "headers": [
