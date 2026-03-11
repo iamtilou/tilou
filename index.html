@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>tilou</title>
+    <title>batcam</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="theme-color" content="#050608">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,8 +13,8 @@
 </head>
 <body>
     <div class="bg-video-wrap" aria-hidden="true">
-        <video id="bg-video" class="bg-video" autoplay muted loop playsinline preload="metadata" disablepictureinpicture>
-            <source src="batman-rain.mp4" type="video/mp4">
+        <video id="bg-video" class="bg-video" autoplay muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture>
+            <source src="/batman-rain.mp4" type="video/mp4">
         </video>
     </div>
     <main class="page">
@@ -115,6 +116,8 @@
             var body = document.body;
             var video = document.getElementById("bg-video");
             var isReady = false;
+            var isVideoResolved = false;
+            var retryBound = false;
 
             function markReady() {
                 if (isReady) {
@@ -126,12 +129,84 @@
                 });
             }
 
+            function markVideoPlaying() {
+                if (isVideoResolved) {
+                    return;
+                }
+                isVideoResolved = true;
+                body.classList.remove("video-failed");
+                body.classList.add("video-playing");
+                markReady();
+            }
+
+            function markVideoFailed(isPermanent) {
+                if (isVideoResolved) {
+                    return;
+                }
+                body.classList.add("video-failed");
+                markReady();
+                if (isPermanent) {
+                    isVideoResolved = true;
+                }
+            }
+
+            function bindRetry() {
+                if (retryBound || isVideoResolved) {
+                    return;
+                }
+                retryBound = true;
+
+                function resumeVideo() {
+                    retryBound = false;
+                    body.classList.remove("video-failed");
+                    tryPlay();
+                }
+
+                window.addEventListener("pointerdown", resumeVideo, { once: true, passive: true });
+                window.addEventListener("keydown", resumeVideo, { once: true });
+            }
+
+            function tryPlay() {
+                if (!video || isVideoResolved) {
+                    return;
+                }
+                var playPromise = video.play();
+                if (playPromise && typeof playPromise.then === "function") {
+                    playPromise.then(markVideoPlaying).catch(function () {
+                        markVideoFailed(false);
+                        bindRetry();
+                    });
+                } else {
+                    markVideoPlaying();
+                }
+            }
+
             if (video) {
                 video.addEventListener("loadeddata", markReady, { once: true });
-                video.addEventListener("canplay", markReady, { once: true });
-                video.addEventListener("error", markReady, { once: true });
+                video.addEventListener("canplay", tryPlay, { once: true });
+                video.addEventListener("playing", markVideoPlaying, { once: true });
+                video.addEventListener("error", function () { markVideoFailed(true); }, { once: true });
+                video.muted = true;
+                video.defaultMuted = true;
+                video.setAttribute("playsinline", "");
+                video.setAttribute("webkit-playsinline", "");
+
+                document.addEventListener("visibilitychange", function () {
+                    if (document.visibilityState === "visible") {
+                        tryPlay();
+                    }
+                });
+
+                setTimeout(tryPlay, 220);
+                setTimeout(function () {
+                    if (!isVideoResolved) {
+                        markVideoFailed(false);
+                    }
+                }, 3000);
+            } else {
+                markVideoFailed(true);
             }
-            setTimeout(markReady, 1400);
+            setTimeout(markReady, 320);
         })();
     </script>
 </body>
