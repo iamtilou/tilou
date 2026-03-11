@@ -24,7 +24,7 @@
     <meta name="theme-color" content="#050608">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="video" href="/batman-rain.mp4?v=20260311" type="video/mp4">
+    <link rel="preload" as="video" href="/batman-rain.mp4?v=hd20260311" type="video/mp4">
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script type="application/ld+json">
@@ -55,10 +55,9 @@
 </head>
 <body>
     <div class="bg-video-wrap" aria-hidden="true">
-        <video id="bg-video-a" class="bg-video is-visible" autoplay muted playsinline webkit-playsinline preload="auto" disablepictureinpicture>
-            <source src="/batman-rain.mp4?v=20260311" type="video/mp4">
+        <video id="bg-video" class="bg-video is-visible" autoplay muted loop playsinline webkit-playsinline preload="auto" disablepictureinpicture>
+            <source src="/batman-rain.mp4?v=hd20260311" type="video/mp4">
         </video>
-        <video id="bg-video-b" class="bg-video" autoplay muted playsinline webkit-playsinline preload="none" disablepictureinpicture data-src="/batman-rain.mp4?v=20260311"></video>
     </div>
     <main class="page">
         <header class="profile-row">
@@ -126,16 +125,7 @@
             <h2>skills</h2>
             <div class="skills-grid">
                 <article class="card">
-                    <h3>lorem ipsum</h3>
-                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </article>
-                <article class="card">
-                    <h3>lorem ipsum</h3>
-                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                </article>
-                <article class="card">
-                    <h3>lorem ipsum</h3>
-                    <p>lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    <h3>skills</h3>
                 </article>
             </div>
         </section>
@@ -143,44 +133,21 @@
         <section class="projects-section">
             <h2>projects</h2>
             <div class="projects-list">
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
-                <span>lorem ipsum</span>
+                <span>projects</span>
             </div>
         </section>
     </main>
     <script>
         (function () {
             var body = document.body;
-            var videoA = document.getElementById("bg-video-a");
-            var videoB = document.getElementById("bg-video-b");
-            var videos = [videoA, videoB].filter(Boolean);
+            var video = document.getElementById("bg-video");
             var isReady = false;
             var isVideoResolved = false;
             var retryBound = false;
-            var activeIndex = 0;
-            var isSwitching = false;
-            var switchPaddingSec = 0.9;
-            var crossfadeMs = 280;
-            var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            var isMobileViewport = window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
-            var saveDataEnabled = navigator.connection && navigator.connection.saveData;
-            var lowMemoryDevice = navigator.deviceMemory && navigator.deviceMemory <= 4;
-            var supportsDualLoop = videos.length === 2 && !prefersReducedMotion && !isMobileViewport && !saveDataEnabled && !lowMemoryDevice;
-
-            if (supportsDualLoop && videoB && !videoB.querySelector("source")) {
-                var secondarySource = document.createElement("source");
-                secondarySource.src = videoB.getAttribute("data-src") || "/batman-rain.mp4?v=20260311";
-                secondarySource.type = "video/mp4";
-                videoB.appendChild(secondarySource);
-                videoB.preload = "auto";
-                videoB.load();
-            }
+            var lastTime = 0;
+            var stalledTicks = 0;
+            var heartbeatId = 0;
+            var resizeTimer = 0;
 
             function markReady() {
                 if (isReady) {
@@ -213,18 +180,59 @@
                 }
             }
 
+            function scheduleResume(delay) {
+                if (document.hidden) {
+                    return;
+                }
+                window.setTimeout(function () {
+                    tryPlay();
+                }, typeof delay === "number" ? delay : 120);
+            }
+
+            function ensurePlayback(force) {
+                if (!video || document.hidden) {
+                    return;
+                }
+
+                if (video.paused || video.ended) {
+                    scheduleResume(force ? 0 : 100);
+                    return;
+                }
+
+                if (force) {
+                    lastTime = video.currentTime;
+                    stalledTicks = 0;
+                    return;
+                }
+
+                var nowTime = video.currentTime;
+                if (Math.abs(nowTime - lastTime) < 0.01) {
+                    stalledTicks += 1;
+                    if (stalledTicks >= 2) {
+                        stalledTicks = 0;
+                        scheduleResume(80);
+                    }
+                } else {
+                    stalledTicks = 0;
+                }
+                lastTime = nowTime;
+            }
+
+            function startHeartbeat() {
+                if (heartbeatId) {
+                    return;
+                }
+                heartbeatId = window.setInterval(function () {
+                    ensurePlayback(false);
+                }, 900);
+            }
+
             function playVideo(video) {
                 var playPromise = video.play();
                 if (playPromise && typeof playPromise.then === "function") {
                     return playPromise;
                 }
                 return Promise.resolve();
-            }
-
-            function setVisible(index) {
-                videos.forEach(function (video, i) {
-                    video.classList.toggle("is-visible", i === index);
-                });
             }
 
             function bindRetry() {
@@ -243,69 +251,12 @@
                 window.addEventListener("keydown", resumeVideo, { once: true });
             }
 
-            function switchLoop() {
-                if (!supportsDualLoop || videos.length < 2 || isSwitching) {
-                    return;
-                }
-
-                var current = videos[activeIndex];
-                var nextIndex = activeIndex === 0 ? 1 : 0;
-                var next = videos[nextIndex];
-
-                isSwitching = true;
-                next.currentTime = 0;
-
-                playVideo(next).then(function () {
-                    setVisible(nextIndex);
-                    markVideoPlaying();
-
-                    window.setTimeout(function () {
-                        current.pause();
-                        current.currentTime = 0;
-                        activeIndex = nextIndex;
-                        isSwitching = false;
-                    }, crossfadeMs);
-                }).catch(function () {
-                    isSwitching = false;
-                    markVideoFailed(false);
-                    bindRetry();
-                });
-            }
-
-            function monitorLoop() {
-                if (!supportsDualLoop || !videos.length) {
-                    return;
-                }
-
-                var current = videos[activeIndex];
-                if (current && !isSwitching && current.duration && isFinite(current.duration)) {
-                    if (current.duration - current.currentTime <= switchPaddingSec) {
-                        switchLoop();
-                    }
-                }
-
-                requestAnimationFrame(monitorLoop);
-            }
-
-            function initVideo(video, shouldLoop) {
-                video.muted = true;
-                video.defaultMuted = true;
-                video.loop = shouldLoop;
-                video.setAttribute("playsinline", "");
-                video.setAttribute("webkit-playsinline", "");
-                video.addEventListener("error", function () {
-                    markVideoFailed(videos.length === 1);
-                });
-            }
-
             function tryPlay() {
-                if (!videos.length) {
+                if (!video) {
                     markVideoFailed(true);
                     return;
                 }
-
-                var current = videos[activeIndex];
-                playVideo(current).then(function () {
+                playVideo(video).then(function () {
                     markVideoPlaying();
                 }).catch(function () {
                     markVideoFailed(false);
@@ -313,28 +264,56 @@
                 });
             }
 
-            if (!supportsDualLoop && videoB) {
-                videoB.pause();
-                while (videoB.firstChild) {
-                    videoB.removeChild(videoB.firstChild);
-                }
-                videos = videoA ? [videoA] : [];
-            }
-
-            videos.forEach(function (video) {
-                initVideo(video, !supportsDualLoop);
-            });
-            setVisible(activeIndex);
-
-            if (videos.length) {
-                videos[0].addEventListener("loadeddata", markReady, { once: true });
-                videos[0].addEventListener("canplay", tryPlay, { once: true });
-                videos[0].addEventListener("playing", markVideoPlaying, { once: true });
+            if (video) {
+                video.muted = true;
+                video.defaultMuted = true;
+                video.loop = true;
+                video.setAttribute("playsinline", "");
+                video.setAttribute("webkit-playsinline", "");
+                video.addEventListener("loadeddata", markReady, { once: true });
+                video.addEventListener("canplay", tryPlay, { once: true });
+                video.addEventListener("playing", markVideoPlaying, { once: true });
+                video.addEventListener("timeupdate", function () {
+                    lastTime = video.currentTime;
+                });
+                video.addEventListener("stalled", function () {
+                    scheduleResume(120);
+                });
+                video.addEventListener("waiting", function () {
+                    scheduleResume(120);
+                });
+                video.addEventListener("suspend", function () {
+                    scheduleResume(180);
+                });
+                video.addEventListener("error", function () {
+                    markVideoFailed(false);
+                    bindRetry();
+                    scheduleResume(220);
+                });
 
                 document.addEventListener("visibilitychange", function () {
                     if (document.visibilityState === "visible") {
-                        tryPlay();
+                        ensurePlayback(true);
+                        scheduleResume(80);
                     }
+                });
+
+                window.addEventListener("resize", function () {
+                    window.clearTimeout(resizeTimer);
+                    resizeTimer = window.setTimeout(function () {
+                        ensurePlayback(true);
+                        scheduleResume(80);
+                    }, 120);
+                });
+
+                window.addEventListener("orientationchange", function () {
+                    ensurePlayback(true);
+                    scheduleResume(120);
+                });
+
+                window.addEventListener("pageshow", function () {
+                    ensurePlayback(true);
+                    scheduleResume(80);
                 });
 
                 setTimeout(tryPlay, 180);
@@ -343,9 +322,7 @@
                         markVideoFailed(false);
                     }
                 }, 2600);
-                if (supportsDualLoop) {
-                    monitorLoop();
-                }
+                startHeartbeat();
             } else {
                 markVideoFailed(true);
             }
