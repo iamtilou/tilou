@@ -1,11 +1,27 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function VideoBackground() {
   const videoRef = useRef(null);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   useEffect(() => {
+    const id = window.setTimeout(() => {
+      setShouldLoadVideo(true);
+    }, 120);
+
+    return () => {
+      window.clearTimeout(id);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoadVideo) {
+      return;
+    }
+
     const video = videoRef.current;
     if (!video) {
       return;
@@ -25,6 +41,9 @@ export default function VideoBackground() {
       video.currentTime = 0;
       tryPlay();
     };
+    const handleLoadedData = () => {
+      setIsVideoReady(true);
+    };
     const handleVisibility = () => {
       if (document.visibilityState === "visible") {
         tryPlay();
@@ -32,6 +51,7 @@ export default function VideoBackground() {
     };
 
     tryPlay();
+    video.addEventListener("loadeddata", handleLoadedData, { once: true });
     video.addEventListener("pause", handlePause);
     video.addEventListener("ended", handleEnded);
     document.addEventListener("visibilitychange", handleVisibility);
@@ -39,19 +59,20 @@ export default function VideoBackground() {
     window.addEventListener("focus", tryPlay);
 
     return () => {
+      video.removeEventListener("loadeddata", handleLoadedData);
       video.removeEventListener("pause", handlePause);
       video.removeEventListener("ended", handleEnded);
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("pageshow", tryPlay);
       window.removeEventListener("focus", tryPlay);
     };
-  }, []);
+  }, [shouldLoadVideo]);
 
   return (
     <div className="bg-video-wrap" aria-hidden="true">
       <video
         ref={videoRef}
-        className="bg-video"
+        className={`bg-video${isVideoReady ? " is-ready" : ""}`}
         autoPlay
         muted
         loop
@@ -59,7 +80,7 @@ export default function VideoBackground() {
         preload="metadata"
         disablePictureInPicture
       >
-        <source src="/batman-rain.mp4?v=hd20260311" type="video/mp4" />
+        {shouldLoadVideo ? <source src="/batman-rain.mp4?v=hd20260311" type="video/mp4" /> : null}
       </video>
     </div>
   );

@@ -60,9 +60,14 @@ body::before {
     min-height: 100%;
     object-fit: cover;
     object-position: 72% center;
-    opacity: 1;
+    opacity: 0;
     backface-visibility: hidden;
     transform: translateZ(0);
+    transition: opacity 0.5s ease;
+}
+
+.bg-video.is-ready {
+    opacity: 1;
 }
 
 .page {
@@ -70,7 +75,16 @@ body::before {
     margin: 0 auto;
     min-height: 100dvh;
     padding: calc(24px + env(safe-area-inset-top)) 0 calc(28px + env(safe-area-inset-bottom));
-    opacity: 1;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: page-enter 0.4s ease 0.02s forwards;
+}
+
+@keyframes page-enter {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .profile-row {
@@ -112,7 +126,7 @@ body::before {
 .role {
     margin: 4px 0 0;
     font-size: 1.02rem;
-    font-weight: 700;
+    font-weight: 400;
     color: var(--muted);
 }
 
@@ -211,10 +225,16 @@ body::before {
 
 @media (prefers-reduced-motion: reduce) {
     .bg-video,
+    .page,
     .avatar,
     .social-links a {
         transition: none !important;
         transform: none !important;
+    }
+
+    .page {
+        animation: none !important;
+        opacity: 1;
     }
 
 }

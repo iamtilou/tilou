@@ -1,4 +1,4 @@
-import VideoBackground from "../components/video-background";
+import VideoBackground from "./video-background";
 
 export const dynamic = "force-static";
 
